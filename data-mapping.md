@@ -60,7 +60,7 @@ roomStructures[0] + "/ " + 값≥1인 항목들 나열
 
 ## common/header.html
 
-> F 메뉴 구조: ABOUT(펜션소개/외경보기) · ROOMS · SPECIAL · RESERVE 4개. PC lnb / 모바일 aside / 전체메뉴(allmenu-wrap) **3곳에 동일 메뉴**가 존재하므로 동적 매핑은 모든 인스턴스에 적용된다.
+> F 메뉴 구조: ABOUT(외부풍경/오시는길/주변관광지) · ROOMS · SPECIAL · RESERVE 4개. PC lnb / 모바일 aside / 전체메뉴(allmenu-wrap) **3곳에 동일 메뉴**가 존재하므로 동적 매핑은 모든 인스턴스에 적용된다.
 
 | data-\* 속성       | 요소                                         | JSON 경로                                                                      |
 | ------------------ | -------------------------------------------- | ------------------------------------------------------------------------------ |
@@ -92,8 +92,31 @@ roomStructures[0] + "/ " + 값≥1인 항목들 나열
 
 - ROOMS 서브메뉴: `customFields.roomtypes[].name` 기준 `<li><a href="room.html?room_id={id}">` 생성.
 - SPECIAL 서브메뉴: `property.facilities[].name` 기준 `<li><a href="facility.html?id={id}">` 생성.
-- **모바일 우측 하단 원형 예약 버튼**(`.m-reserve-btn`, `data-booking-link`): `var(--color-secondary)` 배경 + 시계 아이콘(`real_clock.png` 마스크, 흰색) + "예약". 768px 이하에서만 노출. 기존 이미지 기반 모바일 예약 버튼(`.btn_reserve` 실시간예약_MO)·footer `ft_btn_reserve`(talk.png)는 제거.
-- 예약 버튼 시계 아이콘(`.main_reserve`/`room`/`allmenu`/모바일)은 `::before` 마스크로 `var(--color-secondary)` 적용(호버 시 흰색).
+- **우측 하단 플로팅 버튼**(`common/header.html`): 예약하기 `.ft_btn_reserve.for_m`(talk.png, `data-booking-link`, 모바일만) + 상담하기 `#talk_custom_button`(consult.png, `data-consult-button`, 총판A + tripPropertyId 일 때). 다른 템플릿과 같은 구현.
+- **모바일 헤더 예약 아이콘**(`.btn_reserve`, `data-booking-link`): 특가 배지(`price.png`) + 예약 아이콘(`mbt_reserve01.png`, 스크롤 시 `mbt_reserveo01.png`). ≡ 왼쪽, YBS 오른쪽.
+- 예약 버튼 시계 아이콘(`.main_reserve`/`room`/`allmenu`)은 `::before` 마스크로 `var(--color-secondary)` 적용(호버 시 흰색).
+
+### 헤더 네이버·인스타그램 버튼 (`homepage.socialLinks`)
+
+| data-\* 속성                            | 요소                                   | JSON 경로                                        |
+| --------------------------------------- | -------------------------------------- | ------------------------------------------------ |
+| `data-homepage-socialLinks-blog`        | 네이버 버튼 `<a>` (`.hd_sns_btn` 안)   | `homepage.socialLinks.blog` (없으면 숨김)        |
+| `data-homepage-socialLinks-instagram`   | 인스타그램 버튼 `<a>` (`.hd_sns_btn` 안) | `homepage.socialLinks.instagram` (없으면 숨김) |
+| `data-social-wrap`                      | 두 버튼 래퍼 `.hd_sns_btn`             | 보이는 버튼이 없으면 래퍼째 숨김                 |
+
+- `HeaderFooterMapper.mapSocialLinks()`(mapPage 에서 호출)가 `facebook / instagram / blog / youtube` 4종을 처리한다.
+  값이 있으면 `href` + `target="_blank" rel="noopener"` 를 넣고 노출, `null`·빈 문자열·공백·키 없음이면 숨긴다.
+  D형 헤더 마크업은 blog(네이버)·instagram 두 개. 마크업은 `style="display: none"` 으로 시작(매핑 전 깜빡임 없음).
+- 헤더에 버튼이 하나라도 보이면 루트(`<html>`)에 `data-social="on"`, 아니면 `"off"`.
+- 위치·크기: 원본 스킨의 `.hd_sns_btn` 훅(최상단 숨김 · 스크롤 헤더에서만 노출)을 그대로 쓴다.
+  - PC(≥1000): **스크롤 헤더(`.header.on`)에서만** `메뉴 | 예약하기 | YBS | [N][인스타] | ≡`, 32px, 간격 10px, YBS 와 15px.
+    최상단(투명 헤더)에서는 보이지 않는다.
+  - 1000~1100px 스크롤 헤더: 소셜이 보이면(`data-social="on"`) 메뉴 여백을 `0 20px / 0 20px` → `0 8px / 0 14px` 로 줄여
+    ABOUT 이 로고 영역과 겹치지 않게 한다.
+  - 모바일(≤999): 최상단·스크롤 모두 YBS 아이콘 왼쪽 `[N][인스타] YBS ≡`(absolute right:157px), 26px, 간격 8px.
+    YBS 가 없으면(`a.ybs` 가 `display: none`) right:64px 로 당겨 `[N][인스타] ≡`.
+- 어드민 프리뷰 `section_update` 의 `section === 'socialLinks'` 는 `pages[page].sections[0]` 이 아니라
+  `homepage.socialLinks` 에 반영하고 헤더 버튼만 다시 매핑한다.
 
 ---
 
@@ -237,7 +260,7 @@ hero.images[isSelected] 기준:
 
 ### 헤더 메뉴 구조 (common/header.html 3곳: PC lnb / 모바일 aside / 전체메뉴 동일)
 
-- ABOUT: 펜션소개(`/main.html`) · 오시는길(`/directions.html`)
+- ABOUT: 외부풍경(`/main.html`) · 오시는길(`/directions.html`)
 - ROOMS: 미리보기(`/layout-map.html`, `data-menu-id="layout-map"` → `layoutMap.enabled` 토글) + roomtypes(동적)
 - SPECIAL: facilities(동적) / RESERVE: 예약하기(booking) · 이용안내(`/reservation.html`)
 
@@ -462,3 +485,39 @@ Room Preview(미리보기)  →  전체 객실 (그룹과 무관), 카드마다 
   매퍼는 이름만 바꾼다**.
 - 값이 없을 때(백오피스 미입력 → `""`) 는 건드리지 않으므로 기존 트립일레븐 문구가 그대로 남는다.
 - `trip11.kr` 링크는 변경하지 않는다.
+
+---
+
+## landing.html (선택 기능 — 여러 숙소 게이트)
+
+t-template-A 와 같은 구현이다 (상세 스키마·카드 구조는 `t-template-A/data-mapping.md` 의 landing 절).
+헤더/푸터가 없는 별도 페이지이고, 카드(`pages.landing.sections[0].about[]`, 1~3장)를 그리드로 나란히 놓는다.
+
+**루트 가드** — `IndexMapper.mapPage()` → `maybeRedirectToLanding()` → `shouldEnterLanding()`
+
+- 어드민 프리뷰 iframe 안이면 skip
+- `pages.landing.sections[0].enabled !== true` 면 skip — **명시적으로 켠 숙소만** 가로챈다.
+  섹션이 없거나 `enabled` 가 false/누락이면 기존처럼 `index.html` 을 그대로 보여준다
+- `document.referrer` 가 같은 origin 이면 skip (헤더 로고, 랜딩의 자기 자신 카드)
+- `document.referrer` 호스트가 `about[].domain` 중 하나면 skip (연결 숙소 랜딩에서 카드로 넘어옴)
+- 그 외 (주소 직접 입력·즐겨찾기·검색/외부 링크) → `location.replace('landing.html')`
+
+`landing.html` 을 직접 열었는데 `enabled !== true` 면 `404.html` 로 보낸다.
+
+쿼리 파라미터 없이 **referrer** 로 "랜딩을 이미 거쳤는지" 를 가른다. 그래서 헤더 로고 링크는 원래대로
+`index.html`, 랜딩 카드도 `./index.html` / `{domain}/` 로 보낸다.
+
+- 크로스 도메인 referrer 는 브라우저 기본 정책(`strict-origin-when-cross-origin`)상 origin 만 오므로 호스트로만 비교한다 (`www.` 유무 무시).
+- 연결 숙소 B 의 랜딩 `about[]` 에 A 의 도메인이 없으면, A 랜딩 → B 카드 클릭 시 B 의 랜딩이 한 번 더 뜬다.
+- https → http 로 넘어가면 브라우저가 referrer 를 보내지 않아 랜딩이 다시 뜬다 (연결 숙소 도메인은 https 전제).
+
+**카드 링크** (`landing-mapper.js` `getCardLink()`) — 전부 새 탭. 도착한 index 는 referrer 로 랜딩을 건너뛴다
+
+| 조건                                         | 이동                          |
+| -------------------------------------------- | ----------------------------- |
+| `about[i].propertyId === property.id`        | `./index.html`                |
+| 연결 숙소 + `about[i].domain` 있음           | `{domain}/`                   |
+| 연결 숙소인데 `domain` 없음                  | `href="#"` (비활성)           |
+
+카드 배경은 `about[i].images` 첫 장, 로고는 `hero.images[]` 중 `blockId === about[i].blockId`,
+로고가 없으면 `about[i].propertyName` 텍스트, `about[i].title` 은 입력했을 때만 보인다.
