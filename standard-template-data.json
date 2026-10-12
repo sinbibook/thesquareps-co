@@ -1,7 +1,7 @@
 {
   "metadata": {
-    "version": "1.0.0",
-    "generatedAt": "2026-09-22T05:11:43.129352478Z",
+    "version": "1.1.0",
+    "generatedAt": "2026-10-12T03:18:27.735677744Z",
     "templateType": "trip_d",
     "propertyId": "18df1608-40d8-4d6d-b1d5-c496a26cb40b",
     "homepageId": "9ed8b04b-594f-41dc-87af-7a8904afabaf"
@@ -1706,6 +1706,35 @@
                 "description": ""
               },
               "enabled": true
+            }
+          ]
+        },
+        "landing": {
+          "sections": [
+            {
+              "enabled": false,
+              "hero": {
+                "images": [ ]
+              },
+              "about": [
+                {
+                  "blockId": "sample-card-1",
+                  "propertyId": "sample-property-1",
+                  "propertyName": "현재 숙소",
+                  "title": "",
+                  "images": [ ],
+                  "order": 1
+                },
+                {
+                  "blockId": "sample-card-2",
+                  "propertyId": "sample-property-2",
+                  "propertyName": "연결 숙소 2",
+                  "domain": "http://localhost:8000/t-template-D",
+                  "title": "",
+                  "images": [ ],
+                  "order": 2
+                }
+              ]
             }
           ]
         }
